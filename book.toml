@@ -1,0 +1,21 @@
+[book]
+authors = ["Tim McGilchrist"]
+language = "en"
+multilingual = false
+src = "book"
+title = "OCaml Debugging and Performance"
+theme = "theme"
+[build]
+build-dir = "_build"
+
+[preprocessor.toc]
+command = "mdbook-toc"
+renderer = ["html"]
+
+[preprocessor.mermaid]
+command = "mdbook-mermaid"
+
+[output.html]
+git-repository-url = "https://github.com/tmcgilchrist/ocaml-debug-performance"
+edit-url-template = "https://github.com/tmcgilchrist/ocaml-debug-performance/edit/main/{path}"
+additional-js = ["mermaid.min.js", "mermaid-init.js"]
