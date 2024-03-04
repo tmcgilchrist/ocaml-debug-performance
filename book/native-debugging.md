@@ -53,7 +53,7 @@ PDB streams.
 
 Apple introduced a new kind of unwinding info the “compact unwinding format” on Apple platforms like macOS and iOS.
 The Clang compiler on those platforms emits this format along with DWARF CFI. The format is described by the implementation
-in clang/llvm, with an independent description provided at [https://faultlore.com/blah/compact-unwinding/](https://faultlore.com/blah/compact-unwinding/) and [https://github.com/mstange/macho-unwind-info](https://github.com/mstange/macho-unwind-info) So to generate good backtraces on Apple platforms, you need to be able to parse and interpret compact unwinding tables.
+in clang/llvm, with an independent description provided at [https://faultlore.com/blah/compact-unwinding/](https://faultlore.com/blah/compact-unwinding/) and [https://github.com/mstange/macho-unwind-info](https://github.com/mstange/macho-unwind-info) So to generate good backtraces on Apple platforms, you need to be able to parse and interpret compact unwinding tables. Further details of how Apple uses STAB plus DWARF for debug info [https://wiki.dwarfstd.org/Apple%27s_%22Lazy%22_DWARF_Scheme.md](https://wiki.dwarfstd.org/Apple%27s_%22Lazy%22_DWARF_Scheme.md)
 
 ## Supported debuggers
 ### GDB
@@ -92,17 +92,20 @@ Some initial work on OCaml LLDB support at https://github.com/ocaml-flambda/llvm
 
 ### RR
 
-rr is a lightweight tool for recording, replaying and debugging execution of applications (trees of processes and threads).
-Debugging extends gdb with very efficient reverse-execution, which in combination with standard gdb/x86 features like
-hardware data watchpoints, makes debugging much more fun. OCaml supports RR on Linux for certain x86_64 and ARM64 platforms.
+rr is a lightweight tool for recording, replaying and debugging execution of applications (trees of
+processes and threads). Debugging extends gdb with very efficient reverse-execution, which in
+combination with standard gdb/x86 features like hardware data watchpoints, makes debugging much more
+fun. OCaml supports RR on Linux for certain x86_64 and ARM64 platforms.
 
 Future work:
+ * Validate RR on macOS/LLDB platform
+ * Validate RR on Linux/LLDB platform
  * RR doesn't currently support Apple M3 chips see https://github.com/rr-debugger/rr/pull/3528
 
 ### WinDbg/CDB
 
 Microsoft provides [Windows Debugging Tools] such as the Windows Debugger (WinDbg) and the Console Debugger (CDB)
-which both support debugging programs that provide PDB information. These debuggers parse the debug info for a
+which both support debugging programs that provide PDB information. These debuggers parse the debug info fpor a
 binary from the PDB, if available, to construct a visualization to serve up in the debugger. Currently the OCaml
 compiler does not produce PDB and future work is required to support debugging on Windows. Additionally OCaml on Windows
 provides three different ports, complicating the matter further.
@@ -110,8 +113,37 @@ provides three different ports, complicating the matter further.
 
 ## DWARF and OCaml
 
-* Importance of DWARF for performance tools like perf
-* Provide a small example of how OCaml gets mapped to DWARF DIEs
+DWARF is a widely-used format for representing debug information for
+consumption by debugging tools but also for runtime systems and profiling.
+DWARF information is typically embedded within an executable and provides
+a way to represent a variety of information:
+
+* _line information_ mapping instructions back to their location in the source
+  program. eg assembly instruction at address `x` originated from `main.ml`
+  at line 13
+* _unwind information_ allowing call chains to be reconstructed from the
+  runtime state of the exectution stack. eg OCaml program is currently
+  running function `x`, which was called from `y` and so on. This is
+  particularly interesting for multicore which introduced fibers and
+  effects, and their runtime managed stack segments.
+* _type information_ allowing debugging tools to reconstruct the structure
+  and identity of values from the runtime state of the program.
+  eg when an OCaml program is executing assembly instruction at address `x`
+  what is the OCaml value sitting in a register.
+
+This information allows debuggers (eg gdb or lldb) and profiling tools to do what they do.
+
+The OCaml compiler has included DWARF support for some time, with the
+large changes comming from OCaml 5 and the associated runtime changes
+the DWARF support needed to be restored and improved.
+
+There are a number of potential user-cases for DWARF information:
+ 1. Use in native debugging tools like `gdb` and `lldb`
+ 2. Statisical profiling using tools like perf
+ 3. Computing call stacks for ThreadSanitizer, a data race detection tool
+
+### OCaml to DWARF DIE Mapping
+Provide a small example of how OCaml gets mapped to DWARF DIEs
 
 DW_TAG_base_type provide base type mappings that can be defined per language.
 Should OCaml be using this to output DWARF representations.

@@ -2,6 +2,9 @@
 
  * perf support for DWARF vs FP vs LBR
 
+ * Importance of DWARF for performance tools like perf
+
+
 Take content from [ocaml/ocaml#12563](https://github.com/ocaml/ocaml/issues/12563),
 [ocaml/ocaml#11144](https://github.com/ocaml/ocaml/pull/11144)
 and [ocaml/ocaml#11031](https://github.com/ocaml/ocaml/pull/11031)
