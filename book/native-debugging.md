@@ -53,7 +53,7 @@ PDB streams.
 
 Apple introduced a new kind of unwinding info the “compact unwinding format” on Apple platforms like macOS and iOS.
 The Clang compiler on those platforms emits this format along with DWARF CFI. The format is described by the implementation
-in clang/llvm, with an independent description provided at [https://faultlore.com/blah/compact-unwinding/](https://faultlore.com/blah/compact-unwinding/) and [https://github.com/mstange/macho-unwind-info](https://github.com/mstange/macho-unwind-info) So to generate good backtraces on Apple platforms, you need to be able to parse and interpret compact unwinding tables. Further details of how Apple uses STAB plus DWARF for debug info [https://wiki.dwarfstd.org/Apple%27s_%22Lazy%22_DWARF_Scheme.md](https://wiki.dwarfstd.org/Apple%27s_%22Lazy%22_DWARF_Scheme.md)
+in clang/llvm, with an independent description provided at [https://faultlore.com/blah/compact-unwinding/](https://faultlore.com/blah/compact-unwinding/) and [https://github.com/mstange/macho-unwind-info](https://github.com/mstange/macho-unwind-info) So to generate good backtraces on Apple platforms, you need to be able to parse and interpret compact unwinding tables. Further details of how Apple uses [STABS](https://opensource.apple.com/source/gdb/gdb-250/doc/stabs.pdf) plus DWARF for debug info [https://wiki.dwarfstd.org/Apple%27s_%22Lazy%22_DWARF_Scheme.md](https://wiki.dwarfstd.org/Apple%27s_%22Lazy%22_DWARF_Scheme.md).
 
 ## Supported debuggers
 ### GDB
