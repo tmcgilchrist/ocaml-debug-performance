@@ -71,8 +71,4 @@ $ ./flamegraph.pl macos-solver-02.outfile > macos-solver-02.svg
 Producing this Flame Graph for the service. Note this was running on a 12 core M3Pro MacBookPro hence the 12 peaks relating to OCaml 5 using all available cores in this machine.
 ![macos-solver-02](macos-flamegraph.svg)
 
-Next step is working out where time is being spend and whether we can speed up things.
-
-## Resources
-
-
+Next step is working out where time is being spend and where we can speed up things.
