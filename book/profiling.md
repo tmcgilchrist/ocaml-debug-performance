@@ -51,7 +51,10 @@ Two libraries for reading / writing [trace-fuchsia](https://github.com/c-cube/oc
 Common Trace Format is a binary trace format designed to be very fast to write. Uses a declaritive language called
 the _Trace Stream Description Language_ TSDL to describe trace stream layout.
 [spec](https://diamon.org/ctf/)
-No OCaml libraries for reading / writing
+No OCaml libraries for reading / writing.
+
+Pprof is a common stacktrace profile format using [protocol buffers](https://github.com/google/pprof/blob/main/proto/profile.proto).
+Used by [pprof](https://github.com/google/pprof) supported as an input format by Speedscope and commercial monitoring tools (Google Cloud Profiler, Polar Signals, Datadog).
 
 ## Converters
 
@@ -59,6 +62,7 @@ Nothing to see here!
 
 ## Walk throughs
 
+ * OCaml 5 Performance [part 1](https://roscidus.com/blog/blog/2024/07/22/performance/)/[part 2](https://roscidus.com/blog/blog/2024/07/22/performance-2/) comprehensive investigation of OCaml 5 performance for an application.
  * Generating CPU Flamegraphs for OCaml on Linux [here](flamegraphs-linux.md)
  * Generating CPU Flamegraphs for OCaml on MacOS [here](flamegraphs-macos.md)
  * Memory profiling with statmemprof in [4.14 LTS](statmemprof-4-lts.md) and [5.3](statmemprof-5.md)
