@@ -697,11 +697,14 @@ Two libraries for reading / writing <a href="https://github.com/c-cube/ocaml-tra
 <p>Common Trace Format is a binary trace format designed to be very fast to write. Uses a declaritive language called
 the <em>Trace Stream Description Language</em> TSDL to describe trace stream layout.
 <a href="https://diamon.org/ctf/">spec</a>
-No OCaml libraries for reading / writing</p>
+No OCaml libraries for reading / writing.</p>
+<p>Pprof is a common stacktrace profile format using <a href="https://github.com/google/pprof/blob/main/proto/profile.proto">protocol buffers</a>.
+Used by <a href="https://github.com/google/pprof">pprof</a> supported as an input format by Speedscope and commercial monitoring tools (Google Cloud Profiler, Polar Signals, Datadog).</p>
 <h2 id="converters"><a class="header" href="#converters">Converters</a></h2>
 <p>Nothing to see here!</p>
 <h2 id="walk-throughs"><a class="header" href="#walk-throughs">Walk throughs</a></h2>
 <ul>
+<li>OCaml 5 Performance <a href="https://roscidus.com/blog/blog/2024/07/22/performance/">part 1</a>/<a href="https://roscidus.com/blog/blog/2024/07/22/performance-2/">part 2</a> comprehensive investigation of OCaml 5 performance for an application.</li>
 <li>Generating CPU Flamegraphs for OCaml on Linux <a href="flamegraphs-linux.html">here</a></li>
 <li>Generating CPU Flamegraphs for OCaml on MacOS <a href="flamegraphs-macos.html">here</a></li>
 <li>Memory profiling with statmemprof in <a href="statmemprof-4-lts.html">4.14 LTS</a> and <a href="statmemprof-5.html">5.3</a></li>
