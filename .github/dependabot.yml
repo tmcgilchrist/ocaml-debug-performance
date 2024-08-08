@@ -7,5 +7,3 @@ updates:
     commit-message:
       prefix: "GA"
       include: "scope"
-    labels:
-      - "deploy"
