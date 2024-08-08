@@ -83,7 +83,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded affix "><a href="preface.html">Preface</a></li><li class="chapter-item expanded "><a href="native-debugging.html"><strong aria-hidden="true">1.</strong> Debugging support in the OCaml compiler</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="sample-debugging-session-gdb.html"><strong aria-hidden="true">1.1.</strong> GDB on Linux debugging session</a></li><li class="chapter-item expanded "><a href="sample-debugging-session-lldb.html"><strong aria-hidden="true">1.2.</strong> LLDB on MacOS debugging session</a></li><li class="chapter-item expanded "><a href="bytecode-debugging.html"><strong aria-hidden="true">1.3.</strong> Debugging bytecode</a></li></ol></li><li class="chapter-item expanded "><a href="profiling.html"><strong aria-hidden="true">2.</strong> Profiling</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="profiling-perf.html"><strong aria-hidden="true">2.1.</strong> Using perf</a></li><li class="chapter-item expanded "><a href="flamegraphs-linux.html"><strong aria-hidden="true">2.2.</strong> Generating CPU Flamegraphs for OCaml on Linux</a></li><li class="chapter-item expanded "><a href="flamegraphs-macos.html"><strong aria-hidden="true">2.3.</strong> Generating CPU Flamegraphs for OCaml on MacOS</a></li><li class="chapter-item expanded "><a href="statmemprof-4-lts.html"><strong aria-hidden="true">2.4.</strong> Memory profiling with statmemprof in 4.14 LTS</a></li><li class="chapter-item expanded "><a href="statmemprof-5.html"><strong aria-hidden="true">2.5.</strong> Memory profiling with statmemprof in 5.3</a></li></ol></li></ol>            </div>
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="preface.html">Preface</a></li><li class="chapter-item expanded "><a href="native-debugging.html"><strong aria-hidden="true">1.</strong> Debugging support in the OCaml compiler</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="sample-debugging-session-gdb.html"><strong aria-hidden="true">1.1.</strong> GDB on Linux debugging session</a></li><li class="chapter-item expanded "><a href="sample-debugging-session-lldb.html"><strong aria-hidden="true">1.2.</strong> LLDB on MacOS debugging session</a></li><li class="chapter-item expanded "><a href="bytecode-debugging.html"><strong aria-hidden="true">1.3.</strong> Debugging bytecode</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="debugging-dap-emacs.html"><strong aria-hidden="true">1.3.1.</strong> Debugging OCaml with Emacs</a></li></ol></li></ol></li><li class="chapter-item expanded "><a href="profiling.html"><strong aria-hidden="true">2.</strong> Profiling</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="profiling-perf.html"><strong aria-hidden="true">2.1.</strong> Using perf</a></li><li class="chapter-item expanded "><a href="flamegraphs-linux.html"><strong aria-hidden="true">2.2.</strong> Generating CPU Flamegraphs for OCaml on Linux</a></li><li class="chapter-item expanded "><a href="flamegraphs-macos.html"><strong aria-hidden="true">2.3.</strong> Generating CPU Flamegraphs for OCaml on MacOS</a></li><li class="chapter-item expanded "><a href="statmemprof-4-lts.html"><strong aria-hidden="true">2.4.</strong> Memory profiling with statmemprof in 4.14 LTS</a></li><li class="chapter-item expanded "><a href="statmemprof-5.html"><strong aria-hidden="true">2.5.</strong> Memory profiling with statmemprof in 5.3</a></li></ol></li></ol>            </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
 
@@ -646,19 +646,163 @@ Target 0: (fib-4.14.1.exe) stopped.
 There are two supported options for debugging bytecode.</p>
 <ol>
 <li><a href="https://v2.ocaml.org/releases/5.1/manual/debugger.html#s%3Ainf-debugger">ocamldebug</a> - provided with the compiler distribution</li>
-<li><a href="https://github.com/hackwaly/ocamlearlybird">ocamlearlybird</a> - VSCode integrated debugger using DAP</li>
+<li><a href="https://github.com/hackwaly/ocamlearlybird">earlybird</a> - VSCode integrated debugger using DAP.</li>
 </ol>
 <p>Both options reuse the protocol from <em>ocamldebug</em> to interface with the bytecode executables.</p>
 <h3 id="dap"><a class="header" href="#dap">DAP</a></h3>
 <p>The Debug Adapter Protocol (DAP) defines the abstract protocol used between a development tool (e.g. IDE or editor) and a debugger. The idea behind the Debug Adapter Protocol (DAP) is to abstract the way how the debugging support of development tools communicates with debuggers or runtimes into a protocol. By using DAP OCaml debugging can be integrated with many different IDEs or editors. See <a href="https://microsoft.github.io/debug-adapter-protocol/">https://microsoft.github.io/debug-adapter-protocol/</a>.</p>
+<p><a href="debugging-dap-emacs.html">Emacs support for DAP</a> using both Bytecode and Native debuggers.</p>
 <h3 id="what-is-missing-1"><a class="header" href="#what-is-missing-1">What is missing?</a></h3>
 <ul>
 <li>ocamldebug support for DAP</li>
 <li>No support for MinGW or MSVC Windows ports</li>
-<li>DAP integration for Vim / Emacs - status unknown</li>
+<li>DAP integration for Vim</li>
 <li>Limited support for Domains in bytecode debug - single domain only</li>
-<li>support for effects - status unknown</li>
+<li>Improvements to <a href="https://github.com/hackwaly/ocamlearlybird/issues">earlybird</a></li>
 </ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="debugging-ocaml-with-emacs"><a class="header" href="#debugging-ocaml-with-emacs">Debugging OCaml with Emacs</a></h1>
+<p>This post started as a March Hacking Days effort at Tarides. I have been working on improving the debugging situation for OCaml and wanted to see how easily I could setup debug support in Emacs using DAP. Debug Adapter Protocol (DAP) is a wire protocol for communicating between an editor/IDE and a debug server like LLDB, providing an abstraction over debugging, similar to how Language Server Protocol (LSP) provides language support.</p>
+<p>OCaml comes with support for debugging native programs with GDB and LLDB, and bytecode code programs using ocamldebug and earlybird. In this post we will cover setting up and debugging both kinds of programs. I am using an M3 Mac so all examples will show ARM64 assembly and macOS specific paths. The same setup should work on Linux. I use <a href="https://github.com/bbatsov/prelude">prelude</a> to configure my Emacs with my own customistations in <code>.emacs/personal</code>, adjust for your own personal Emacs setup.</p>
+<p>Let's start with the following program:</p>
+<pre><code class="language-ocaml">(* fib.ml *)
+let rec fib n =
+  if n = 0 then 0
+  else if n = 1 then 1
+  else fib (n-1) + fib (n-2)
+
+let main () =
+  let r = fib 20 in
+  Printf.printf &quot;fib(20) = %d&quot; r
+
+let _ = main ()
+</code></pre>
+<p>And this dune configuration in the same directory.</p>
+<pre><code class="language-ocaml">; dune
+(executable
+ (name fib)
+ (modules fib)
+ (modes exe byte))
+</code></pre>
+<pre><code class="language-ocaml">; dune-project
+(lang dune 3.11)
+(map_workspace_root false)
+</code></pre>
+<p>Create an empty opam switch in same directory and install dune:</p>
+<pre><code class="language-shell">$ opam switch create . 5.1.1 --no-install
+$ opam install dune
+</code></pre>
+<h2 id="emacs-configuration"><a class="header" href="#emacs-configuration">Emacs configuration</a></h2>
+<p>Emacs has <a href="https://github.com/emacs-lsp/dap-mode">dap-mode</a> that provides everything we need. Install it using <code>M-x package-install</code> and choose the <code>dap-mode</code> package. I have the following lines in my <code>.emacs/personal/init.el</code>:</p>
+<pre><code class="language-emacs-lisp">; Require dap-mode plus the two extra files we need
+(require 'dap-mode)
+(require 'dap-codelldb)
+(require 'dap-ocaml)
+
+; Setup key bindings using use-package.
+(use-package dap-mode
+  :bind ((&quot;C-c M-n&quot; . dap-next)
+         (&quot;C-c M-s&quot; . dap-step-in)
+         (&quot;C-c M-a&quot; . dap-step-out)
+         (&quot;C-c M-w&quot; . dap-continue)))
+</code></pre>
+<p>Save and restart Emacs, then we can move onto setting up Bytecode debugging.</p>
+<h2 id="bytecode-debugging"><a class="header" href="#bytecode-debugging">Bytecode debugging</a></h2>
+<p>The <a href="https://github.com/hackwaly/ocamlearlybird">earlybird</a> project provides DAP support for debugging OCaml bytecode.
+Earlybird uses the (undocumented) protocol of ocamldebug to communicate with a bytecode executable, inheriting the
+same functionality as ocamldebug. Start by installing the package:</p>
+<pre><code class="language-shell">opam install earlybird
+</code></pre>
+<p>then create a file in <code>.vscode/launch.json</code> with this configuration:</p>
+<pre><code class="language-json">{
+    &quot;version&quot;: &quot;0.2.0&quot;,
+    &quot;configurations&quot;: [
+        {
+            &quot;name&quot;: &quot;OCaml earlybird (experimental)&quot;,
+            &quot;type&quot;: &quot;ocaml.earlybird&quot;,
+            &quot;request&quot;: &quot;launch&quot;,
+            &quot;program&quot;: &quot;./_build/default/fib.bc&quot;,
+            &quot;stopOnEntry&quot;: true,
+            &quot;cwd&quot;: &quot;${workspaceFolder}&quot;
+        },
+}
+</code></pre>
+<p>Build the project with <code>dune build</code> to create the <code>fib.bc</code> bytecode file. Finally start a debugger with <code>M-x dap-debug</code>. It will prompt you to choose a session, we want <code>OCaml earlybird (experimental)</code> from the named configuration above. It will start earlybird and immediately stop it before executing any OCaml code.</p>
+<p>To set breakpoints you need to open the OCaml source file in <code>_build/default/fib.ml</code> and click on the source lines you want to stop at. Here is what it looks like after a few recursions. Use the buttons to control the debugger or use the keybindings we added. Curiously they are not pre-defined but here I've tried to reuse mappings from <a href="https://v2.ocaml.org/manual/debugger.html#s:inf-debugger">ocamldebug</a>.</p>
+<h2 id="native-debugging"><a class="header" href="#native-debugging">Native debugging</a></h2>
+<p>OCaml can also produce native binaries that can be debugged using GDB or LLDB, depending on your platform. Here we will use LLDB on macOS.</p>
+<p>Add another section to <code>.vscode/launch.json</code> for starting lldb.</p>
+<pre><code class="language-json">        {
+            &quot;type&quot;: &quot;lldb&quot;,
+            &quot;request&quot;: &quot;launch&quot;,
+            &quot;name&quot;: &quot;LLDB with ocamlopt&quot;,
+            &quot;program&quot;: &quot;./fib.exe&quot;,
+            &quot;args&quot;: [],
+            &quot;stopOnEntry&quot;: true,
+            &quot;cwd&quot;: &quot;${workspaceFolder}&quot;
+        },
+</code></pre>
+<p>Run <code>M-x dap-codelldb-setup</code> which will download the codelldb DAP program that we are using to communicate with LLDB. This gets installed into <code>.extension/vscode/codelldb</code>.</p>
+<p>Now compile the fib program with <code>ocamlopt -g -o fib.exe fib.ml</code> and startup a debugger session with <code>M-x dap-debug</code> choose the <code>LLDB with ocamlopt</code> option. You should see something similar to:</p>
+<p>Now DAP as setup with LLDB and macOS, is a little broken and is missing support for setting breakpoints on symbols. Lets add that :-)</p>
+<p>The second option is debugging with Dune, this is slightly different for two reasons. First Dune places the executable into <code>_build/default/fib.exe</code> and second Dune produces slightly different sym bols. We need a new section in <code>.vscode/launch.json</code> for Dune</p>
+<pre><code class="language-json">        {
+            &quot;type&quot;: &quot;lldb&quot;,
+            &quot;request&quot;: &quot;launch&quot;,
+            &quot;name&quot;: &quot;LLDB with Dune&quot;,
+            &quot;program&quot;: &quot;./_build/default/fib.exe&quot;,
+            &quot;args&quot;: [],
+            &quot;stopOnEntry&quot;: true,
+            &quot;cwd&quot;: &quot;${workspaceFolder}&quot;
+        },
+</code></pre>
+<p>Remove the old <code>fib.exe</code> in the project directory and run <code>dune build</code>. Startup a new DAP session with <code>M-x dap-debug</code> and choose <code>LLDB with Dune</code>. You should see the same debugger session as before.</p>
+<h2 id="conclusion"><a class="header" href="#conclusion">Conclusion</a></h2>
+<p>Debugging OCaml with DAP inside Emacs is possible. Use <code>dap-mode</code> with:</p>
+<pre><code class="language-emacs-lisp">(require 'dap-mode)
+(require 'dap-codelldb)
+(require 'dap-ocaml)
+
+(use-package dap-mode
+  :bind ((&quot;C-c M-n&quot; . dap-next)
+         (&quot;C-c M-s&quot; . dap-step-in)
+         (&quot;C-c M-a&quot; . dap-step-out)
+         (&quot;C-c M-w&quot; . dap-continue)))
+
+</code></pre>
+<p>and a <code>launch.json</code> of</p>
+<pre><code class="language-json">{
+    &quot;version&quot;: &quot;0.2.0&quot;,
+    &quot;configurations&quot;: [
+        {
+            &quot;name&quot;: &quot;OCaml earlybird (experimental)&quot;,
+            &quot;type&quot;: &quot;ocaml.earlybird&quot;,
+            &quot;request&quot;: &quot;launch&quot;,
+            &quot;program&quot;: &quot;./_build/default/fib.bc&quot;,
+            &quot;stopOnEntry&quot;: true,
+            &quot;cwd&quot;: &quot;${workspaceFolder}&quot;
+        },
+        {
+            &quot;type&quot;: &quot;lldb&quot;,
+            &quot;request&quot;: &quot;launch&quot;,
+            &quot;name&quot;: &quot;LLDB with Dune&quot;,
+            &quot;program&quot;: &quot;./_build/default/fib.exe&quot;,
+            &quot;args&quot;: [],
+            &quot;stopOnEntry&quot;: true,
+            &quot;cwd&quot;: &quot;${workspaceFolder}&quot;
+        },
+        {
+            &quot;type&quot;: &quot;lldb&quot;,
+            &quot;request&quot;: &quot;launch&quot;,
+            &quot;name&quot;: &quot;LLDB with ocamlopt&quot;,
+            &quot;program&quot;: &quot;./fib.exe&quot;,
+            &quot;args&quot;: [],
+            &quot;stopOnEntry&quot;: true,
+            &quot;cwd&quot;: &quot;${workspaceFolder}&quot;
+        }
+    ]
+}
+</code></pre>
+<p>The same setup will work under VSCode with the <code>CodeLLDB</code> and <code>OCaml Platform</code> extensions installed. Happy Emacs debugging.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="profiling"><a class="header" href="#profiling">Profiling</a></h1>
 <p>This is an attempt to map the software profiling ecosystem, with a focus on the OCaml programming language.
 A review / survey of profilers, their data formats, analysis UIs and converters between data formats.</p>
@@ -713,7 +857,24 @@ Used by <a href="https://github.com/google/pprof">pprof</a> supported as an inpu
 <p>This format was inspired by <a href="https://profilerpedia.markhansen.co.nz">https://profilerpedia.markhansen.co.nz</a></p>
 <p>Prior art:</p>
 <ul>
-<li>OCaml-bench profiling notes <a href="https://github.com/ocaml-bench/notes/blob/master/profiling_notes.md">https://github.com/ocaml-bench/notes/blob/master/profiling_notes.md</a></li>
+<li>
+<p>OCaml-bench profiling notes <a href="https://github.com/ocaml-bench/notes/blob/master/profiling_notes.md">https://github.com/ocaml-bench/notes/blob/master/profiling_notes.md</a></p>
+</li>
+<li>
+<p>Add Profile-Guided Optimization (PGO) support to the compiler - https://github.com/ocaml/ocaml/issues/12200
+[runtime-events-tools]: https://github.com/tarides/runtime_events_tools
+[magic-trace]: https://github.com/janestreet/magic-trace
+[memtrace]: https://github.com/janestreet/memtrace
+[dtrace]: https://dtrace.org/
+[eio]: https://github.com/ocaml-multicore/eio
+[eio-trace]: https://github.com/ocaml-multicore/eio-trace
+[perfetto.dev]: https://ui.perfetto.dev/
+[github.com/jlfwong/speedscope]: https://github.com/jlfwong/speedscope
+[github.com/janestreet/memtrace_viewer]: https://github.com/janestreet/memtrace_viewer
+[www.brendangregg.com/flamegraphs.html]: https://www.brendangregg.com/flamegraphs.html
+[github.com/Netflix/flamescope]: https://github.com/Netflix/flamescope
+[github.com/google/pprof]: https://github.com/google/pprof/blob/main/doc/README.md</p>
+</li>
 </ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="profiling-ocaml-with-perf"><a class="header" href="#profiling-ocaml-with-perf">Profiling OCaml with perf</a></h1>
 <ul>
