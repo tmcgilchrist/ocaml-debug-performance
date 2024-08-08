@@ -5,6 +5,7 @@
    - [GDB on Linux debugging session](sample-debugging-session-gdb.md)
    - [LLDB on MacOS debugging session](sample-debugging-session-lldb.md)
    - [Debugging bytecode](bytecode-debugging.md)
+     - [Debugging OCaml with Emacs](debugging-dap-emacs.md)
  - [Profiling](profiling.md)
    - [Using perf](profiling-perf.md)
    - [Generating CPU Flamegraphs for OCaml on Linux](flamegraphs-linux.md)

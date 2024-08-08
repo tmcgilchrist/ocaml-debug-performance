@@ -74,7 +74,7 @@ This format was inspired by [https://profilerpedia.markhansen.co.nz](https://pro
 Prior art:
  * OCaml-bench profiling notes [https://github.com/ocaml-bench/notes/blob/master/profiling_notes.md](https://github.com/ocaml-bench/notes/blob/master/profiling_notes.md)
 
-
+ * Add Profile-Guided Optimization (PGO) support to the compiler - https://github.com/ocaml/ocaml/issues/12200
 [runtime-events-tools]: https://github.com/tarides/runtime_events_tools
 [magic-trace]: https://github.com/janestreet/magic-trace
 [memtrace]: https://github.com/janestreet/memtrace
