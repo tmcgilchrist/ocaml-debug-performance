@@ -16,11 +16,7 @@ According to wikipedia [1]
 
 > A debugger or debugging tool is a computer program used to test and debug other programs (the "target" program).
 
-Writing a debugger from scratch for a language requries considerable work, especially if you want to support
-various platforms like Linux, MacOS, and Windows. Existing debuggers like GDB and LLDB can be extended to support
-debugging a language like OCaml. This is the path OCaml has chosen for what I'll call native debugging, debugging
-exectuables compiled to object code via assembly and run on a CPU. OCaml also includes a debugger for the bytecode
-exectuables it also produces, more on that later.
+Writing a debugger from scratch for a language requries considerable work, especially if you want to support various platforms like Linux, MacOS, and Windows. Existing debuggers like GDB and LLDB can be extended to support debugging a language like OCaml. This is the path OCaml has chosen for what I'll call native debugging, debugging exectuables compiled to object code via assembly and run on a CPU. OCaml also includes a debugger for the bytecode exectuables it also produces, more on that later.
 
 ### DWARF
 
@@ -32,42 +28,33 @@ According to the [DWARF] standard website:
 > any processor or operating system. It is widely used on Unix, Linux and other operating systems, as well
 > as in stand-alone environments.
 
-DWARF allows a compiler to describe how program source translates to assembly, using a data structure called
-Debugging Information Entry (DIE) which stores the information as "tags" to denote functions, variables etc.,
-e.g., `DW_TAG_variable`, `DW_TAG_pointer_type`, `DW_TAG_subprogram` etc.
+DWARF allows a compiler to describe how program source translates to assembly, using a data structure called Debugging Information Entry (DIE) which stores the information as "tags" to denote functions, variables etc., e.g., `DW_TAG_variable`, `DW_TAG_pointer_type`, `DW_TAG_subprogram` etc.
 You can also invent your own tags and attributes.
 
-DWARF reader is a program that consumes the DWARF format and creates debugger compatible output.
-This program may live in the compiler itself.
+DWARF reader is a program that consumes the DWARF format and creates debugger compatible output. This program may live in the compiler itself.
+
+### CFI
+
+What is CFI?
+What is CFI vs DWARF?
+https://sourceware.org/binutils/docs/as/CFI-directives.html
 
 ### CodeView/PDB
 
-[PDB] (Program Database) is a file format created by Microsoft that contains debug information.
-PDBs can be consumed by debuggers such as WinDbg/CDB and other tools to display debug information.
-A PDB contains multiple streams that describe debug information about a specific binary such
-as types, symbols, and source files used to compile the given binary. CodeView is another
-format which defines the structure of [symbol records] and [type records] that appear within
-PDB streams.
+[PDB] (Program Database) is a file format created by Microsoft that contains debug information. PDBs can be consumed by debuggers such as WinDbg/CDB and other tools to display debug information. A PDB contains multiple streams that describe debug information about a specific binary such as types, symbols, and source files used to compile the given binary. CodeView is another format which defines the structure of [symbol records] and [type records] that appear within PDB streams.
 
 ### Compact Unwinding Format
 
-Apple introduced a new kind of unwinding info the “compact unwinding format” on Apple platforms like macOS and iOS.
-The Clang compiler on those platforms emits this format along with DWARF CFI. The format is described by the implementation
-in clang/llvm, with an independent description provided at [https://faultlore.com/blah/compact-unwinding/](https://faultlore.com/blah/compact-unwinding/) and [https://github.com/mstange/macho-unwind-info](https://github.com/mstange/macho-unwind-info) So to generate good backtraces on Apple platforms, you need to be able to parse and interpret compact unwinding tables. Further details of how Apple uses [STABS](https://opensource.apple.com/source/gdb/gdb-250/doc/stabs.pdf) plus DWARF for debug info [https://wiki.dwarfstd.org/Apple%27s_%22Lazy%22_DWARF_Scheme.md](https://wiki.dwarfstd.org/Apple%27s_%22Lazy%22_DWARF_Scheme.md).
+Apple introduced a new kind of unwinding info the “compact unwinding format” on Apple platforms like macOS and iOS. The Clang compiler on those platforms emits this format along with DWARF CFI. The format is described by the implementation in clang/llvm, with an independent description provided at [https://faultlore.com/blah/compact-unwinding/](https://faultlore.com/blah/compact-unwinding/) and [https://github.com/mstange/macho-unwind-info](https://github.com/mstange/macho-unwind-info) So to generate good backtraces on Apple platforms, you need to be able to parse and interpret compact unwinding tables. Further details of how Apple uses [STABS](https://opensource.apple.com/source/gdb/gdb-250/doc/stabs.pdf) plus DWARF for debug info [https://wiki.dwarfstd.org/Apple%27s_%22Lazy%22_DWARF_Scheme.md](https://wiki.dwarfstd.org/Apple%27s_%22Lazy%22_DWARF_Scheme.md).
 
 ## Supported debuggers
 ### GDB
 
-OCaml supports GBD on Linux for all OCaml supported platforms, it supports basic debugging like setting breakpoints, stepping,
-backtraces etc. A sample GDB/Linux session is [shown here](sample-debugging-session.md).
-Additionally there are GDB macros [gdb-macros](https://github.com/ocaml/ocaml/blob/trunk/tools/gdb-macros) and Python macros [gdb_ocamlrun.py](https://github.com/ocaml/ocaml/blob/trunk/tools/gdb_ocamlrun.py) that provide low-level debugging of OCaml programs and of the
- OCaml runtime itself (both native and byte-code).
+OCaml supports GBD on Linux for all OCaml supported platforms, it supports basic debugging like setting breakpoints, stepping, backtraces etc. A sample GDB/Linux session is [shown here](sample-debugging-session-gdb.md). Additionally there are GDB macros [gdb-macros](https://github.com/ocaml/ocaml/blob/trunk/tools/gdb-macros) and Python macros [gdb_ocamlrun.py](https://github.com/ocaml/ocaml/blob/trunk/tools/gdb_ocamlrun.py) that provide low-level debugging of OCaml programs and of the  OCaml runtime itself (both native and byte-code).
 
 #### OCaml parser extensions
 
-To be able to show debug output, we need an expression parser. GDB expression parsers are written in [Bison],
-and could be written to accept a subset of OCaml expressions, including printing OCaml values knowing the
-boxed types used by OCaml. Read the [Memory Representation of Values] chapter of RealWorld OCaml for more details.
+To be able to show debug output, we need an expression parser. GDB expression parsers are written in [Bison], and could be written to accept a subset of OCaml expressions, including printing OCaml values knowing the boxed types used by OCaml. Read the [Memory Representation of Values] chapter of RealWorld OCaml for more details.
 
 Future work:
 
@@ -77,8 +64,9 @@ Future work:
 
 ### LLDB
 
-LLDB is the default debugger on MacOS, shipped with XCode and generally works the best on that platform.
-It is also available on Linux and is the [default debugger for FreeBSD].
+LLDB is the default debugger on MacOS, shipped with XCode and generally works the best on that platform. It is also available on Linux and is the [default debugger for FreeBSD].
+
+A sample LLDB/Linux session is [shown here](sample-debugging-session-lldb.md).
 
  * LLDB has a plugin architecture but that does not work for language support.
  * At present GDB generally works better on Linux.
@@ -93,22 +81,15 @@ Some initial work on OCaml LLDB support at https://github.com/ocaml-flambda/llvm
 ### RR
 
 rr is a lightweight tool for recording, replaying and debugging execution of applications (trees of
-processes and threads). Debugging extends gdb with very efficient reverse-execution, which in
-combination with standard gdb/x86 features like hardware data watchpoints, makes debugging much more
-fun. OCaml supports RR on Linux for certain x86_64 and ARM64 platforms.
+processes and threads). Debugging extends GDB with very efficient reverse-execution, which in combination with standard features like hardware data watchpoints, makes debugging much more fun. OCaml supports RR on Linux for certain x86_64 and ARM64 platforms.
 
 Future work:
- * Validate RR on macOS/LLDB platform
  * Validate RR on Linux/LLDB platform
  * RR doesn't currently support Apple M3 chips see https://github.com/rr-debugger/rr/pull/3528
 
 ### WinDbg/CDB
 
-Microsoft provides [Windows Debugging Tools] such as the Windows Debugger (WinDbg) and the Console Debugger (CDB)
-which both support debugging programs that provide PDB information. These debuggers parse the debug info fpor a
-binary from the PDB, if available, to construct a visualization to serve up in the debugger. Currently the OCaml
-compiler does not produce PDB and future work is required to support debugging on Windows. Additionally OCaml on Windows
-provides three different ports, complicating the matter further.
+Microsoft provides [Windows Debugging Tools] such as the Windows Debugger (WinDbg) and the Console Debugger (CDB) which both support debugging programs that provide PDB information. These debuggers parse the debug info for a binary from the PDB, if available, to construct a visualization to serve up in the debugger. Currently the OCaml compiler does not produce PDB and future work is required to support debugging on Windows. Additionally OCaml on Windows provides three different ports, complicating the matter further.
 
 
 ## DWARF and OCaml
@@ -190,10 +171,12 @@ LOCAL_SYMBOLS:
 
 ## What is missing?
 
+ * Integration with IDEs (Debug Adapter Protocol)
+ * 
+
 ## Resources
 
-Tom Tromey discusses debugging support in rustc, provides a good overview of the area and what OCaml
-might also want to do - [https://www.youtube.com/watch?v=elBxMRSNYr4](https://www.youtube.com/watch?v=elBxMRSNYr4)
+Tom Tromey discusses debugging support in rustc, provides a good overview of the area and what OCaml might also want to do - [https://www.youtube.com/watch?v=elBxMRSNYr4](https://www.youtube.com/watch?v=elBxMRSNYr4)
 
 [https://rustc-dev-guide.rust-lang.org/debugging-support-in-rustc.html](https://rustc-dev-guide.rust-lang.org/debugging-support-in-rustc.html)
 
