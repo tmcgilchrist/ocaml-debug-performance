@@ -1,13 +1,13 @@
 # Generating OCaml flamegraphs on MacOS
 
-Flame Graphs are a visualisation for sampled stack frames. They provide a great way to visualise stack traces of profiled software to identify the most frequent code-paths and optimise them. Popularised by Brendan Gregg *loads* more information can be found on his blog https://www.brendangregg.com/flamegraphs.html
+Flame Graphs are a visualisation for sampled stack frames. They provide a great way to visualise stack traces of profiled software to identify the most frequent code paths and optimise them. Popularised by Brendan Gregg *loads* more information can be found on his blog https://www.brendangregg.com/flamegraphs.html
 
-Here we are interested in how we can generate Flame Graphs for OCaml programs on macOS.
-macOS is what I use for development work and I could not find other documentation on how to do this.
+Here, we are interested in how we can generate Flame Graphs for OCaml programs on macOS.
+I use macOS for development work, and I could not find other documentation on how to do this.
 So here we are.
 
 ## Getting Started
-First we need **XCode** and Instruments installed, get them via the App Store by searching for XCode and installing that. **Instruments.app** is Apple's profiling tool for capturing and visualising traces, along with many other interesting things. It is built on top of the DTrace tracing framework from OpenSolaris, which was ported to Mac OS X v10.5 and is available in all following versions of macOS. Dtrace is very cool and deserves its own post on how to use it effectively on OCaml programs.
+First, we need **XCode** and Instruments installed. Get them via the App Store by searching for XCode and installing it. **Instruments.app** is Apple's profiling tool for capturing and visualising traces, along with many other interesting things. It is built on top of the DTrace tracing framework from OpenSolaris, which was ported to Mac OS X v10.5 and is available in all following versions of macOS. Dtrace is very cool and deserves its own post on how to use it effectively on OCaml programs.
 
 After XCode is installed confirm that Instruments is also installed, this command will find the `xctrace` executable:
 ``` shell
@@ -68,7 +68,7 @@ $ open Launch_stress.exe_2024-01-18_11.45.55_042428AC.trace
 $ ./stackcollapse-instruments.pl macos-solver-02.trace > macos-solver-02.outfile
 $ ./flamegraph.pl macos-solver-02.outfile > macos-solver-02.svg
 ```
-Producing this Flame Graph for the service. Note this was running on a 12 core M3Pro MacBookPro hence the 12 peaks relating to OCaml 5 using all available cores in this machine.
+Producing this Flame Graph for the service. Note this was running on a 12-core M3Pro MacBookPro, hence the 12 peaks relating to OCaml 5 using all available cores in this machine.
 ![macos-solver-02](macos-flamegraph.svg)
 
 Next step is working out where time is being spend and where we can speed up things.

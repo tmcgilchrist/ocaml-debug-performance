@@ -1,0 +1,3 @@
+# Memoization Strategies
+
+<!-- toc -->

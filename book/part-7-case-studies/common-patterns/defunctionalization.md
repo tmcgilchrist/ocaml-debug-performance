@@ -1,0 +1,3 @@
+# The Defunctionalization Pattern
+
+<!-- toc -->
